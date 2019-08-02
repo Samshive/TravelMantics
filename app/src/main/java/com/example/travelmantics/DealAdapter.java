@@ -1,5 +1,6 @@
 package com.example.travelmantics;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -27,10 +28,11 @@ public class DealAdapter extends RecyclerView.Adapter<DealAdapter.DealViewHolder
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mDatabaseReference;
     private ChildEventListener mChildListener;
+    private static Activity caller;
 
 
     public DealAdapter () {
-        FirebaseUtil.openFbReference("traveldeals");
+        //FirebaseUtil.openFbReference("traveldeals");
         mFirebaseDatabase = FirebaseUtil.mFirebaseDatabase;
         mDatabaseReference = FirebaseUtil.mDatabaseReference;
         deals = FirebaseUtil.mDeals;
