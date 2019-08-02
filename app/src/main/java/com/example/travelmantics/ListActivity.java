@@ -39,6 +39,16 @@ public class ListActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.list_activity_menu,menu);
+
+        MenuItem insertMenu = menu.findItem(R.id.insert_menu);
+        if (FirebaseUtil.isAdmin){
+            insertMenu.setVisible(true);
+        }
+        else {
+            insertMenu.setVisible(false);
+        }
+
+
         return true;
     }
 
@@ -70,10 +80,14 @@ public class ListActivity extends AppCompatActivity {
         FirebaseUtil.detachListener();
     }
 
+    public void showMenu() {
+        invalidateOptionsMenu();
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
-        FirebaseUtil.openFbReference("traveldeals",this);
+        FirebaseUtil.openFbReference("traveldeals", this);
 
         RecyclerView rvDeals = (RecyclerView) findViewById(R.id.rvDeals);
         final DealAdapter adapter = new DealAdapter();
@@ -83,4 +97,6 @@ public class ListActivity extends AppCompatActivity {
 
         FirebaseUtil.attachListener();
     }
+
+
 }
