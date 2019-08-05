@@ -1,6 +1,7 @@
 package com.example.travelmantics;
 
 import android.app.Activity;
+import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -8,20 +9,24 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Executor;
 
 public class FirebaseUtil {
+    private static final String EXTRA_STORAGE_REFERENCE_KEY = "Extra_ref_key";
     public static FirebaseDatabase mFirebaseDatabase;
     public static DatabaseReference mDatabaseReference;
     public static FirebaseStorage mStorage;
@@ -129,4 +134,6 @@ public class FirebaseUtil {
         mStorage = FirebaseStorage.getInstance();
         mStorageRef = mStorage.getReference().child("deals_pictures");
     }
+
+
 }

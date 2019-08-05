@@ -18,6 +18,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -81,11 +82,13 @@ public class DealActivity extends AppCompatActivity {
             menu.findItem(R.id.delete_menu).setVisible(true);
             menu.findItem(R.id.save_menu).setVisible(true);
             enableEditTexts(true);
+            findViewById(R.id.btnImage).setEnabled(true);
         }
         else {
             menu.findItem(R.id.delete_menu).setVisible(false);
             menu.findItem(R.id.save_menu).setVisible(false);
             enableEditTexts(false);
+            findViewById(R.id.btnImage).setEnabled(false);
         }
 
         return true;
@@ -126,12 +129,28 @@ public class DealActivity extends AppCompatActivity {
 
     }
     private void deleteDeal() {
-        if (deal ==null){
-            Toast.makeText(this,"Please save the deal before deleting",Toast.LENGTH_SHORT).show();
+        if (deal == null) {
+            Toast.makeText(this, "Please save the deal before deleting", Toast.LENGTH_SHORT).show();
             return;
         }
         mDatabaseReference.child(deal.getId()).removeValue();
+        Log.d("image name", deal.getImageName());
+        if (deal.getImageName() != null && deal.getImageName().isEmpty() == false) {
+            StorageReference picRef = FirebaseUtil.mStorage.getReference().child(deal.getImageName());
+            picRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    Log.d("Delete Image", "Image Successfully Deleted");
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.d("Delete Image", e.getMessage());
+                }
+            });
 
+
+        }
     }
 
     private void backToList(){
@@ -161,20 +180,36 @@ public class DealActivity extends AppCompatActivity {
             Uri imageUri = data.getData();
             StorageReference ref = FirebaseUtil.mStorageRef.child(imageUri.getLastPathSegment());
             UploadTask taskSnapshot = ref.putFile(imageUri);
-            taskSnapshot.addOnSuccessListener(this, new OnSuccessListener<UploadTask.TaskSnapshot>() {
+
+/*            taskSnapshot.addOnSuccessListener(this, new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     String url = taskSnapshot.getStorage().getDownloadUrl().toString();
-                    String pictureName = taskSnapshot.getStorage().getPath();
                     deal.setImageUrl(url);
+                    showImage(url);
+                }
+            });
+*/
+            ref.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+                    String url = uri.toString();
+
+                    deal.setImageUrl(url);
+
                     Log.d("Url: ", url);
-                    Log.d("Name", pictureName);
+
                     showImage(url);
                 }
             });
 
-        }
 
+            String pictureName = ref.getPath();
+
+            deal.setImageName(pictureName);
+            Log.d("Name:", pictureName);
+
+        }
     }
 
     private void showImage(String url){
@@ -183,4 +218,8 @@ public class DealActivity extends AppCompatActivity {
             Picasso.with(this).load(url).resize(width, width*2/3).centerCrop().into(imageView);
         }
     }
+
+
+
+
 }
